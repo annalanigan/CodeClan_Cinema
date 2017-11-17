@@ -2,8 +2,8 @@ require_relative('../db/sql_runner')
 
 class Customer
 
-  attr_reader :id, :name
-  attr_accessor :funds
+  attr_reader :id
+  attr_accessor :funds, :name
 
   def initialize(options)
     @id = options['id'].to_i if options['id']
@@ -35,6 +35,35 @@ class Customer
   end
 
   def self.map_items(customers)
-    return customers.map { |customer| Customer.new(customer) } 
+    return customers.map { |customer| Customer.new(customer) }
   end
+
+  def self.find(id)
+    sql = "SELECT * FROM customers WHERE id = $1"
+    values = [id]
+    result = SqlRunner.run(sql, values).first
+    return Customer.new(result)
+  end
+
+  def update
+    sql = ('UPDATE customers
+          SET (name, funds) = ($1, $2)
+          WHERE id = $3')
+    values = [@name, @funds, @id]
+    return SqlRunner.run(sql, values)
+  end
+
+  def film
+    sql = ('SELECT * from films
+          INNER JOIN tickets
+          ON tickets.film_id = films.id
+          INNER JOIN customers
+          ON customers.id = tickets.customer_id
+          WHERE customers.id = $1')
+    values = [@id]
+    result = SqlRunner.run(sql, values)
+    result.map { |item| Film.new(item)}
+  end
+
+
 end
