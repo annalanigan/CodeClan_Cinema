@@ -30,7 +30,7 @@ class Ticket
   def self.all
     sql = "SELECT * FROM tickets"
     tickets =  SqlRunner.run(sql)
-    return self.map(tickets)
+    return self.map_items(tickets)
   end
 
   def self.map_items(ticket_data)

@@ -65,5 +65,28 @@ class Customer
     result.map { |item| Film.new(item)}
   end
 
+  def pay_for_ticket(value)
+    @funds -= value
+    update
+  end
+
+  def buy_ticket(film_id)
+    sql = ('SELECT price from films
+          WHERE films.id = $1')
+    values = [film_id]
+    result = SqlRunner.run(sql,values)[0]['price'].to_i
+    # use the pay_for_ticket method with the result as the arguement.
+    pay_for_ticket(result)
+    # also use the Ticket.new to create a new ticket.
+    new_ticket = Ticket.new({'customer_id' => @id, 'film_id' => film_id})
+    new_ticket.save
+  end
+
+#   SELECT price from films
+# INNER JOIN tickets
+# ON tickets.film_id = films.id
+# INNER JOIN customers
+# ON customers.id = tickets.customer_id
+# WHERE customers.id = 1
 
 end
