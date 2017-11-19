@@ -56,7 +56,10 @@ class Screening
   end
 
   def self.most_popular
-    
+    sql = 
+    values = []
+    result = SqlRunner.run(sql, values)
+    return Screening.new(result)
   end
 
   # def fully_booked
