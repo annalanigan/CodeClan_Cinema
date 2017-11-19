@@ -2,10 +2,10 @@ require( 'pry-byebug' )
 require_relative( 'models/ticket' )
 require_relative( 'models/customer' )
 require_relative( 'models/film' )
-# require_relative( 'models/screening' )
+require_relative( 'models/screening' )
 
 Ticket.delete_all()
-# Screening.delete_all()
+Screening.delete_all()
 Customer.delete_all()
 Film.delete_all()
 
@@ -43,10 +43,8 @@ film4.save
 # ticket7.save
 # ticket8 = Ticket.new( {'customer_id' => customer4.id, 'film_id' => film2.id} )
 # ticket8.save
-ticket9 = Ticket.new( {'customer_id' => customer2.id, 'film_id' => film1.id} )
-ticket9.save
-
-binding.pry
+# ticket9 = Ticket.new( {'customer_id' => customer2.id, 'film_id' => film1.id} )
+# ticket9.save
 
 screening1 = Screening.new({'film_id' => film1.id, 'start_time' => '2017-01-08 04:00:00', 'empty_seats' => 20})
 screening1.save
@@ -72,4 +70,5 @@ customer3.buy_ticket(screening5)
 
 # Screening.most_popular should return screening2
 
+binding.pry
 nil

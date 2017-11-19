@@ -55,8 +55,10 @@ class Customer
 
   def film
     sql = ('SELECT * from films
+          INNER JOIN screenings
+          ON screenings.film_id = films.id
           INNER JOIN tickets
-          ON tickets.film_id = films.id
+          ON tickets.screening_id = screenings.id
           INNER JOIN customers
           ON customers.id = tickets.customer_id
           WHERE customers.id = $1')
@@ -70,23 +72,25 @@ class Customer
     update
   end
 
-  def buy_ticket(film_id)
-    sql = ('SELECT price from films
-          WHERE films.id = $1')
-    values = [film_id]
-    result = SqlRunner.run(sql,values)[0]['price'].to_i
-    # use the pay_for_ticket method with the result as the arguement.
-    pay_for_ticket(result)
-    # also use the Ticket.new to create a new ticket.
-    new_ticket = Ticket.new({'customer_id' => @id, 'film_id' => film_id})
-    new_ticket.save
+  def buy_ticket(screening)
+    if screening.empty_seats > 0
+      sql = ('SELECT price FROM films
+      INNER JOIN screenings
+      ON screenings.film_id = films.id
+      WHERE screenings.id = $1')
+      values = [screening.id]
+      result = SqlRunner.run(sql,values)[0]['price'].to_i
+      if result <= @funds
+        pay_for_ticket(result)
+        new_ticket = Ticket.new({'customer_id' => @id, 'screening_id' => screening.id})
+        new_ticket.save
+        screening.fill_seat
+      else
+        p 'not enough funds to purchase ticket'
+      end
+    else
+      p 'fully booked'
+    end
   end
-
-#   SELECT price from films
-# INNER JOIN tickets
-# ON tickets.film_id = films.id
-# INNER JOIN customers
-# ON customers.id = tickets.customer_id
-# WHERE customers.id = 1
 
 end
