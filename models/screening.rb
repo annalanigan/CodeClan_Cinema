@@ -55,7 +55,9 @@ class Screening
     return Screening.new(result)
   end
 
-  
+  def self.most_popular
+    
+  end
 
   # def fully_booked
   #   @empty_seats = 0
